@@ -1,0 +1,28 @@
+{
+  "name": "tres",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./app",
+    "debug": "DEBUG=tres:* npm start"
+  },
+  "dependencies": {
+    "body-parser": "~1.15.2",
+    "bootstrap": "^3.3.7",
+    "bower": "^1.8.0",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "ejs": "~2.5.2",
+    "express": "~4.14.0",
+    "express-session": "^1.14.2",
+    "morgan": "~1.7.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "passport.socketio": "^3.7.0",
+    "restify": "^4.2.0",
+    "serve-favicon": "~2.3.0",
+    "session-file-store": "^0.2.2",
+    "socket.io": "^1.5.1"
+  }
+}

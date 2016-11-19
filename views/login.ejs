@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <% include headerStuff %>
+    </head>
+    <body>
+        <div class="container">
+            <% if (locals.messages.length > 0) { %>
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <strong>Warning!</strong> <%= locals.messages %>
+            </div>
+            <% } %>
+            <form class="form-signin" method="POST" action="/users/login/send">
+                <h2 class="form-signin-heading">Please sign in</h2>
+                
+                <label for="username" class="sr-only">Username</label>
+                <input id="username" name="username"  class="form-control" placeholder="Username" required="" autofocus="" type="text">
+                
+                <label for="password" class="sr-only">Password</label>
+                <input id="password" name="password" class="form-control" placeholder="Password" required="" type="password">
+
+                <label for="email" class="sr-only">Email</label>
+                <input id="email" name="email" class="form-control" type="hidden">
+                
+                <label for="middleName" class="sr-only">Middle name</label>
+                <input id="middleName" name="middleName" class="form-control" type="hidden">
+                
+                <label for="familyName" class="sr-only">Family name</label>
+                <input id="familyName" name="familyName" class="form-control"  type="hidden">
+                
+                <div class="checkbox">
+                    <label>
+                        <input value="remember-me" type="checkbox"> Remember me
+                    </label>
+                </div>
+
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            </form>
+            <br/>
+            <button class="btn btn-lg btn-primary btn-block" onclick="loginUp()" type="button">Register </button>
+        </div>
+        <% include footer %>
+        <script src="/javascripts/login.js"> </script>
+    </body>
+</html>

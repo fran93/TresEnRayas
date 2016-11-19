@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <% include headerStuff %>
+    </head>
+    <body>
+        
+        <% include header %>
+        
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-4">  
+                    <div class="panel panel-primary"> 
+                        <div class="panel-heading"> 
+                            <h3 class="panel-title"> Lista de usuarios </h3> 
+                        </div> 
+                        <div class="panel-body">  
+                            <div id='userList' class="list-group"> </div>
+                        </div> 
+                    </div>
+                </div>     
+                <div class="col-lg-4">  
+                    <div class="panel panel-default">
+                        <!-- Default panel contents -->
+                        <div class="panel-heading">Estadísticas de <span class="badge"><%= user %></span> </div>
+
+                        <!-- Table -->
+                        <table class="table">
+                            <tr>
+                                <th scope="row">Partidas jugadas</th>
+                                <td>50</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Partidas ganadas</th>
+                                <td>50</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Partidas empatadas</th>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Partidas perdidas</th>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Porcentaje de victorias</th>
+                                <td>100%</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <button id="letsplay" class="btn btn-primary" type="button">Jugar vs <span class="badge"><%= user %></span></button>
+                </div>
+            </div>
+        </div>
+        
+        <% include footer %>
+        
+        <script src="/socket.io/socket.io.js"></script>
+        <script> 
+            $( document ).ready(function() {
+                var socket = io();
+                //el usuario que está viendo la interfaz
+                var mainUser='<%= user %>';
+                //el usuario seleccionado en la lista
+                var selectedUser = '<%= user %>';
+
+                //Resfrescar la lista de usuarios
+                socket.on('usersList', function (users) {
+                    $('#userList').empty();
+                    for (var i = 0; i < users.length; i++) {
+                        $('#userList').append('<button type="button" class="list-group-item">' + users[i] + '</button>');
+                    }
+                    $('#userList button').click(function(){
+                    loadStats($(this).text());
+                });
+                });
+
+                $('#letsplay').click(function(){
+                    if(mainUser===selectedUser){
+                        window.location.href = "/bot";
+                    }else{
+                        console.log('Lets play against '+selectedUser);
+                    }
+                });
+                
+                //Cargar las estadísticas del usuario
+                loadStats(mainUser);
+            });
+
+            function loadStats(user){
+                //cambiar el usuario seleccionado
+                selectedUser = user;
+                $('.panel-heading span.badge').text(user);
+                $('#letsplay span.badge').text(user);
+            }
+        </script>
+    </body>
+</html>
