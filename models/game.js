@@ -15,6 +15,10 @@ module.exports = class Game {
         return this.users[1];
     }
     
+    getTurno(){
+        return this.turno;
+    }
+    
     nextBot(){
         //comprobar si se ha ganado
         if(this.turno>4){

@@ -9,7 +9,11 @@
         
         <div class="container-fluid"> 
             <div class='row'>
-                <div class="col-lg-4">  </div>
+                <div class="col-lg-4">  
+                    <div class="alert alert-info">
+                        <strong>Espere</strong> a que se conecte el otro jugador
+                    </div>
+                </div>
                 
                 <div class="col-lg-4">  
                     <div class="square">
@@ -62,7 +66,111 @@
         
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            
+            $( document ).ready(function() {
+                var socket = io('/tablero');
+                //contra quien te estás enfrentando
+                var rival = '<%= rival %>';
+                //id de la partida
+                var id = '';
+                //fin
+                var end = false;
+                var turno = false;
+                var symbol = 'x';
+                
+                socket.emit('newGame', rival);
+                
+                $('div.square').click(function(){
+                    //comprobar que no le hayamos añadido nada anteriormente
+                    if($(this).children().length === 0 && !end && turno){
+                        //obtener la posición
+                        var row = $(this).parent().parent().index();
+                        var column = $(this).index();
+                        var index = 0;
+                        switch(row){
+                            case 0:
+                                index = column;
+                            break;
+                            case 1:
+                                index = column + 3;
+                            break;
+                            case 2:
+                                index = column + 6;
+                            break;
+                        }
+                        
+                        if(symbol==='x'){
+                            $(this).append("<div class='cross'> </div>");
+                        }else{
+                            $(this).append("<div class='circle'> </div>");
+                        }
+                        $(this).children().hide().fadeIn('slow');
+                        //dejar que espere su turno
+                        turno = false;
+                        $('div.alert-info').text('Espere su turno');
+                        //mandar al servidor el movimiento
+                        socket.emit( 'next', { position : index, symbol: symbol, game: id } );
+                    }
+                });
+                
+                socket.on('next', function(pos){
+                    var selector = "";
+                    switch(pos){
+                        case 0: case 1: case 2:
+                            selector = $('.row:eq(0) .square:eq('+pos+')');
+                        break;
+                        case 3: case 4: case 5:
+                             selector = $('.row:eq(1) .square:eq('+(pos-3)+')');
+                        break;
+                        case 6: case 7: case 8:
+                             selector = $('.row:eq(2) .square:eq('+(pos-6)+')');
+                        break;
+                    };
+                    if(symbol==='x'){
+                        $(selector).append("<div class='circle'> </div>");
+                    }else{
+                        $(selector).append("<div class='cross'> </div>");
+                    }
+                    $(selector).children().hide().fadeIn('slow');
+                    //ahora nos toca jugar a nosotros
+                    turno = true;
+                    $('div.alert-info').text('Ponga una ficha en el tablero');
+                });
+                
+                socket.on('startGame', function(game){
+                    id = game;
+                    //si el id es igual que el usuario, empieza moviendo
+                    if(id==='<%= user %>'){
+                        turno = true;
+                        $('div.alert-info').text('Ponga una ficha en el tablero');
+                    }else{
+                        symbol ='o';
+                        $('div.alert-info').text('Espere su turno');
+                    }
+                });
+                
+                
+                socket.on('end', function(ending){
+                    end=true;
+                    switch(ending){
+                        case 'x':
+                            if(symbol==='x')
+                                $('div.alert-info').parent().append("<div class='alert alert-success' role='alert'> Felicidades! has ganado a "+rival+"</div>");
+                            else
+                                $('div.alert-info').parent().append("<div class='alert alert-danger' role='alert'> Has sido derrotado por "+rival+"!</div>");
+                        break;
+                        case 'o':
+                            if(symbol==='o')
+                                $('div.alert-info').parent().append("<div class='alert alert-success' role='alert'> Felicidades! has ganado a "+rival+"</div>");
+                            else
+                                $('div.alert-info').parent().append("<div class='alert alert-danger' role='alert'> Has sido derrotado por "+rival+"!</div>");
+                        break;
+                        case 'tables':
+                           $('div.alert-info').parent().append("<div class='alert alert-info' role='alert'> Empate!</div>");
+                        break;
+                    }
+                    $('div.alert-info').remove();
+                });
+            });
         </script>
     </body>
 </html>
