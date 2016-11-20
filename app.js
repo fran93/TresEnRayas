@@ -22,6 +22,7 @@ const passportSocketIo = require("passport.socketio");
 var users = require('./routes/users');
 var index = require('./routes/index');
 var bot = require('./routes/bot');
+var tablero = require('./routes/tablero');
 
 var app = express();
 
@@ -75,10 +76,12 @@ users.initPassport(app);
 app.use('/', index);
 app.use('/users', users.router);
 app.use('/bot', bot.router);
+app.use('/tablero', tablero.router);
 
 //SocketIO routes
 index.socketio(io);
 bot.socketio(io);
+tablero.socketio(io);
 
 
 // catch 404 and forward to error handler

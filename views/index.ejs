@@ -51,6 +51,24 @@
                     
                     <button id="letsplay" class="btn btn-primary" type="button">Jugar vs <span class="badge"><%= user %></span></button>
                 </div>
+                
+                <div class="col-lg-4">
+                    <div id="challenge" class="modal-content" style="display: none;"> 
+                        <div class="modal-header"> 
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> 
+                            <h4 class="modal-title">¡Has sido retado!</h4> 
+                        </div> 
+                        <div class="modal-body"> 
+                            <p> ¡<span class='badge'>  </span> te ha retado! ¿Aceptas jugar contra él?</p> 
+                        </div> 
+                        <div class="modal-footer"> 
+                            <button type="button" class="btn btn-danger">Rechazar</button> 
+                            <button type="button" class="btn btn-success">Aceptar</button> 
+                        </div> 
+                    </div>
+                    
+                    <div class="alert alert-info" role="alert"  style="display: none;"> <strong>Esperando</strong> a que acepte la petición el otro jugador.</div>
+                </div>
             </div>
         </div>
         
@@ -59,7 +77,7 @@
         <script src="/socket.io/socket.io.js"></script>
         <script> 
             $( document ).ready(function() {
-                var socket = io();
+                var socket = io('/home');
                 //el usuario que está viendo la interfaz
                 var mainUser='<%= user %>';
                 //el usuario seleccionado en la lista
@@ -72,28 +90,59 @@
                         $('#userList').append('<button type="button" class="list-group-item">' + users[i] + '</button>');
                     }
                     $('#userList button').click(function(){
-                    loadStats($(this).text());
+                        loadStats($(this).text());
+                    });
                 });
+                
+                //Comprobar si alguien nos ha retado
+                socket.on('challenge', function(user){
+                    $('#challenge span.badge').text(user);
+                    $('#challenge').show();
                 });
-
+                
+                //Respuesta al reto
+                socket.on('responseChallenge', function(json){
+                    if(json.accepted){
+                        window.location.href = "/tablero?rival="+json.rival;
+                    }else{
+                        $('.alert-info').hide();
+                    }
+                });
+                
+                //Aceptar el reto
+                $('#challenge .btn-success').click(function(){
+                    var rival = $('#challenge span.badge').text();
+                    $('#challenge').hide();
+                    socket.emit('responseChallenge', {user: rival, accepted: true});
+                    window.location.href = "/tablero?rival="+rival;
+                });
+                //Rechazar el reto
+                $('#challenge .btn-danger').click(function(){
+                    $('#challenge').hide();
+                    socket.emit('responseChallenge', {user: $('#challenge span.badge').text(), accepted: false});
+                });
+                
                 $('#letsplay').click(function(){
                     if(mainUser===selectedUser){
                         window.location.href = "/bot";
                     }else{
-                        console.log('Lets play against '+selectedUser);
+                        $('.alert-info').show();
+                        socket.emit('challenge', selectedUser);
                     }
                 });
                 
                 //Cargar las estadísticas del usuario
                 loadStats(mainUser);
+                
+                function loadStats(user){
+                    //cambiar el usuario seleccionado
+                    selectedUser = user;
+                    $('.panel-heading span.badge').text(user);
+                    $('#letsplay span.badge').text(user);
+                }
             });
 
-            function loadStats(user){
-                //cambiar el usuario seleccionado
-                selectedUser = user;
-                $('.panel-heading span.badge').text(user);
-                $('#letsplay span.badge').text(user);
-            }
         </script>
+        
     </body>
 </html>

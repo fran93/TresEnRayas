@@ -13,9 +13,11 @@ router.get('/', usersRouter.ensureAuthenticated, function(req, res, next) {
 
 module.exports.socketio = function(io) {
     var games = {};
+    //namespace
+    var nsp = io.of('/bot');
     
     //Si se desconecta un usuario que se acabe la partida
-    io.on('connection', function(socket){
+    nsp.on('connection', function(socket){
         
         socket.on('next', function(json){
             var state = games[socket.request.user].next(json.position, json.symbol);
@@ -45,6 +47,10 @@ module.exports.socketio = function(io) {
                 delete games[socket.request.user];
             }
             games[socket.request.user] = new Game(socket.request.user);
+        });
+        
+        socket.on('disconnect', function(){
+            //por ahora no hacemos nada aquí
         });
     });
 };

@@ -1,4 +1,4 @@
-var socket = io();
+var socket = io('/bot');
 var end = false;
 
 $( document ).ready(function() {
