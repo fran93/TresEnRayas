@@ -28,11 +28,11 @@
                         <table class="table">
                             <tr>
                                 <th scope="row">Partidas jugadas</th>
-                                <td>50</td>
+                                <td>0</td>
                             </tr>
                             <tr>
                                 <th scope="row">Partidas ganadas</th>
-                                <td>50</td>
+                                <td>0</td>
                             </tr>
                             <tr>
                                 <th scope="row">Partidas empatadas</th>
@@ -44,7 +44,7 @@
                             </tr>
                             <tr>
                                 <th scope="row">Porcentaje de victorias</th>
-                                <td>100%</td>
+                                <td>0%</td>
                             </tr>
                         </table>
                     </div>
@@ -137,9 +137,32 @@
                 function loadStats(user){
                     //cambiar el usuario seleccionado
                     selectedUser = user;
+                    //pedir los datos al servidor
+                    socket.emit('statistics', user);
+                    //cambiar el nombre 
                     $('.panel-heading span.badge').text(user);
                     $('#letsplay span.badge').text(user);
                 }
+                
+                socket.on('statistics', function(result){
+                    if(result===null){
+                        //actualizar los datos de las estadísticas
+                        $('td:eq(0)').text(0);
+                        $('td:eq(1)').text(0);
+                        $('td:eq(2)').text(0);
+                        $('td:eq(3)').text(0);
+                        $('td:eq(4)').text('0%');
+                    }else{
+                        //actualizar los datos de las estadísticas
+                        $('td:eq(0)').text(result.played);
+                        $('td:eq(1)').text(result.victories);
+                        $('td:eq(2)').text(result.tables);
+                        $('td:eq(3)').text(result.defeats);
+                        //calcular el porcentaje de victorias
+                        var porcentaje = (result.victories/result.played)*100;
+                        $('td:eq(4)').text(porcentaje+'%');
+                    }
+                });
             });
 
         </script>

@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 exports.router = router;
 const Game = require('../models/game');
+const statistics = require('../models/statistics');
 
 //sesiones
 const usersRouter = require('./users');
@@ -62,12 +63,21 @@ module.exports.socketio = function(io) {
                 if(state==='o'){
                     socket.emit('end', 'o');
                     nsp.to(mapUsers[rival]).emit('end', 'o');
+                    //guardar el resultado
+                    statistics.insert({player: json.symbol==='o' ? socket.request.user : rival , victory: 1, table: 0, defeat: 0});
+                    statistics.insert({player: json.symbol==='o' ? rival : socket.request.user , victory: 0, table: 0, defeat: 1});
                 }else if(state==='x'){
                     socket.emit('end', 'x');
-                     nsp.to(mapUsers[rival]).emit('end', 'x');
+                    nsp.to(mapUsers[rival]).emit('end', 'x');
+                    //guardar el resultado
+                    statistics.insert({player: json.symbol==='x' ? socket.request.user : rival , victory: 1, table: 0, defeat: 0});
+                    statistics.insert({player: json.symbol==='x' ? rival : socket.request.user , victory: 0, table: 0, defeat: 1});
                 }else if(state==='tables'){
                     socket.emit('end', 'tables');
-                     nsp.to(mapUsers[rival]).emit('end', 'tables');
+                    nsp.to(mapUsers[rival]).emit('end', 'tables');
+                    //guardar el resultado
+                    statistics.insert({player: socket.request.user, victory: 0, table: 1, defeat: 0});
+                    statistics.insert({player: rival, victory: 0, table: 1, defeat: 0});     
                 }
                 //borrar el juego
                 delete games[json.game];

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const usersRouter = require('./users');
 const util = require('util');
+const statistics = require('../models/statistics');
 
 router.get('/', usersRouter.ensureAuthenticated, function(req, res, next) {
     res.render('index', { title: 'Home', user: req.user });
@@ -42,6 +43,14 @@ module.exports.socketio = function(io) {
             }else{
                 nsp.to(mapUsers[json.user]).emit('responseChallenge', {accepted: false});
             }
+        });
+        
+        socket.on('statistics', function(player){
+            statistics.getStatistics(player).then( result =>{
+                socket.emit('statistics', result[0]);
+            }).catch (err =>{
+                console.log('Error al obtener las estadísticas' +util.inspect(err));
+            }); ;
         });
     });
 };
