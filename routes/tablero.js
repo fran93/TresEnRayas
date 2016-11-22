@@ -73,5 +73,10 @@ module.exports.socketio = function(io) {
                 delete games[json.game];
             }
         });
+        
+        //Chat entre los dos jugadores 
+        socket.on('message', function(json){
+            nsp.to(mapUsers[json.rival]).emit('message', json.message);
+        });
     });
 };

@@ -9,58 +9,51 @@
         
         <div class="container-fluid"> 
             <div class='row'>
-                <div class="col-lg-4">  
+                <div class="col-lg-3">  
                     <div class="alert alert-info">
                         <strong>Espere</strong> a que se conecte el otro jugador
                     </div>
                 </div>
                 
-                <div class="col-lg-4">  
-                    <div class="square">
-
+                <div class="col-lg-5">  
+                    <div class="container-fluid"> 
+                        <div class='row'>
+                            <div class="col-lg-12">  
+                                <div class="square"> </div>
+                                <div class="square"> </div>
+                                <div class="square"> </div>                
+                            </div>
+                        </div>  
+                        <div class='row'>
+                            <div class="col-lg-12">  
+                                <div class="square"> </div>
+                                <div class="square"> </div>
+                                <div class="square"> </div>                
+                            </div>
+                        </div>  
+                        <div class='row'>
+                            <div class="col-lg-12">  
+                                <div class="square"></div>
+                                <div class="square"></div>
+                                <div class="square"></div>                
+                            </div>
+                        </div>  
                     </div>
-                    <div class="square">
-                    </div>
-                    <div class="square">
-                    </div>                
                 </div>
-
-                <div class="col-lg-4">  </div>
-            </div>  
-            <div class='row'>
-                <div class="col-lg-4">  </div>
-                
                 <div class="col-lg-4">  
-                    <div class="square">
+                    <div class="form-group">
+                        <label for="comments">Habla con <%= rival %>:</label>
+                        <textarea class="form-control" readonly rows="10" id="comments"></textarea>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Enviar mensaje" id="message">
+                            <div class="input-group-btn">
+                                    <button id="enter" class="btn btn-default" type="submit"><i class="glyphicon glyphicon-send"></i></button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="square">
                     </div>
-                    <div class="square">
-                        
-                    </div>                
                 </div>
-
-                <div class="col-lg-4">  </div>
             </div>  
-            <div class='row'>
-                <div class="col-lg-4">  </div>
-                
-                <div class="col-lg-4">  
-                    <div class="square">
-                        
-                    </div>
-                    <div class="square">
-                        
-                    </div>
-                    <div class="square">
-                        
-                    </div>                
-                </div>
-
-                <div class="col-lg-4">  </div>
-            </div>  
-        </div>
-
         
         <% include footer %>
         
@@ -116,13 +109,13 @@
                     var selector = "";
                     switch(pos){
                         case 0: case 1: case 2:
-                            selector = $('.row:eq(0) .square:eq('+pos+')');
+                            selector = $('.row:eq(1) .square:eq('+pos+')');
                         break;
                         case 3: case 4: case 5:
-                             selector = $('.row:eq(1) .square:eq('+(pos-3)+')');
+                             selector = $('.row:eq(2) .square:eq('+(pos-3)+')');
                         break;
                         case 6: case 7: case 8:
-                             selector = $('.row:eq(2) .square:eq('+(pos-6)+')');
+                             selector = $('.row:eq(3) .square:eq('+(pos-6)+')');
                         break;
                     };
                     if(symbol==='x'){
@@ -148,7 +141,6 @@
                     }
                 });
                 
-                
                 socket.on('end', function(ending){
                     end=true;
                     switch(ending){
@@ -170,6 +162,31 @@
                     }
                     $('div.alert-info').remove();
                 });
+                
+                socket.on('message', function(message){
+                    $('#comments').append(rival+': '+message+'\n');
+                });
+                
+                //Evento para cuando se presione la letra enter en el comentario
+                $('#message').keyup(function(e){
+                    if(e.keyCode == 13)
+                    {
+                        sendMessages();
+                    }
+                });
+                
+                $('#enter').click(function(){
+                    sendMessages();
+                });
+                
+                function sendMessages(){
+                    var message = $('#message').val();
+                    $('#message').val('');
+                    //añadir a la caja de comentarios
+                    $('#comments').append('Tú: '+message+'\n');
+                    //enviar al servidor
+                    socket.emit( 'message', { message : message, rival: rival} );
+                }
             });
         </script>
     </body>
