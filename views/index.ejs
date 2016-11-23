@@ -49,7 +49,7 @@
                         </table>
                     </div>
                     
-                    <button id="letsplay" class="btn btn-primary" type="button">Jugar vs <span class="badge"><%= user %></span></button>
+                    <button id="letsplay" class="btn btn-primary" type="button">Retar</button>
                 </div>
                 
                 <div class="col-lg-4">
@@ -82,15 +82,21 @@
                 var mainUser='<%= user %>';
                 //el usuario seleccionado en la lista
                 var selectedUser = '<%= user %>';
+                //hashmap lista de usuario, para tener los estados a mano
+                var states = {};
 
                 //Resfrescar la lista de usuarios
                 socket.on('usersList', function (users) {
+                    //guardar el hashmap para su uso posterior
+                    states = users;
+                    //limpiar la lista
                     $('#userList').empty();
-                    for (var i = 0; i < users.length; i++) {
-                        $('#userList').append('<button type="button" class="list-group-item">' + users[i] + '</button>');
+                    //añadir la lista de usuarios con sus correspondientes eventos
+                    for (var i in users) {
+                        $('#userList').append('<button type="button" value="'+ i +'" class="list-group-item">'+ i +' <span class="badge">'+ users[i] +'</span> </button>');
                     }
                     $('#userList button').click(function(){
-                        loadStats($(this).text());
+                        loadStats($(this).val());
                     });
                 });
                 
@@ -123,11 +129,27 @@
                 });
                 
                 $('#letsplay').click(function(){
-                    if(mainUser===selectedUser){
-                        window.location.href = "/bot";
+                    //quitar la alerta antes de comprobarlo de nuevo
+                    $('.alert-warning').hide();
+                    //Ambos usuarios deben estar listos antes de mandar el resto
+                    if(states[selectedUser]==='listo' && states[mainUser]==='listo'){
+                        if(mainUser===selectedUser){
+                            window.location.href = "/bot";
+                        }else{
+                            $('.alert-info').show();
+                            socket.emit('challenge', selectedUser);
+                        }
                     }else{
-                        $('.alert-info').show();
-                        socket.emit('challenge', selectedUser);
+                        //eliminar el elemento si ya estaba
+                        $('.alert-warning button').click();
+                        //en caso contrario informamos al usuario 
+                        $('.alert-info').parent().append(
+                            '<div class="alert alert-warning alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span></button>'+
+                                '<strong>Ambos jugadores</strong> debéis de tener el estado de listo antes de que puedas retarlo.'+
+                            ' </div>'
+                        );
+                        
                     }
                 });
                 
@@ -141,7 +163,6 @@
                     socket.emit('statistics', user);
                     //cambiar el nombre 
                     $('.panel-heading span.badge').text(user);
-                    $('#letsplay span.badge').text(user);
                 }
                 
                 socket.on('statistics', function(result){
@@ -162,6 +183,13 @@
                         var porcentaje = (result.victories/result.played)*100;
                         $('td:eq(4)').text(porcentaje+'%');
                     }
+                });
+                
+                socket.on('resetState', function(){
+                    //quitar el mensaje de warning y ocultar las ventanas con información
+                    $('.alert-warning button').click();
+                    $('.alert-info').hide();
+                    $('#challenge').hide();
                 });
             });
 
