@@ -26,6 +26,23 @@ module.exports.socketio = function(io) {
         mapUsers[socket.request.user] = socket.id;  
         
         socket.on('disconnect', function(){
+            //avisar al rival de que el juego ha terminado
+            if(socket.request.user in games){
+                nsp.to(mapUsers[games[socket.request.user].getRival()]).emit('end', 'disconnected');
+                //borrar el juego
+                delete games[socket.request.user];
+            }else{
+                //si el que se desconecta es el rival, hay que buscarlo entre los objetos de juegos
+                for(i in games){
+                    if(games[i].getRival()===socket.request.user){
+                        nsp.to(mapUsers[games[i].getUser()]).emit('end', 'disconnected');
+                        //borrar el juego
+                        delete games[i];
+                        //finalizar el bucle
+                        break;
+                    }
+                }
+            }
             //borrar al usuario
             users.splice(users.indexOf(socket.request.user), 1);
             delete mapUsers[socket.request.user];

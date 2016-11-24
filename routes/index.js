@@ -30,8 +30,10 @@ module.exports.socketio = function(io) {
         
         socket.on('disconnect', function(){
             //resetear el estado del usuario que espera una respuesta
-            users[challenge[socket.request.user]]='listo';
-            nsp.to(mapUsers[challenge[socket.request.user]]).emit('resetState');
+            if( socket.request.user in challenge){
+                users[challenge[socket.request.user]]='listo';
+                nsp.to(mapUsers[challenge[socket.request.user]]).emit('resetState');
+            }
             //borrar al usuario
             delete users[socket.request.user];
             delete mapUsers[socket.request.user];
@@ -49,7 +51,7 @@ module.exports.socketio = function(io) {
             challenge[socket.request.user]=user;
             challenge[user]=socket.request.user;
             //actualizar la lista de los usuarios
-            nsp.emit('usersList', users);            
+            nsp.emit('usersList', users);          
             //mandar el reto
             nsp.to(mapUsers[user]).emit('challenge', socket.request.user);
         });
@@ -67,6 +69,8 @@ module.exports.socketio = function(io) {
                 nsp.to(mapUsers[json.user]).emit('responseChallenge', {accepted: false});
             }
             //eliminar de retos pendientes
+            delete challenge[socket.request.user];
+            delete challenge[json.user];
         });
         
         socket.on('statistics', function(player){

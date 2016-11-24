@@ -159,6 +159,11 @@
                         case 'tables':
                            $('div.alert-info').parent().append("<div class='alert alert-info' role='alert'> Empate!</div>");
                         break;
+                        case 'disconnected':
+                            $('div.alert-info').parent().append("<div class='alert alert-warning' role='alert'>  "+rival+" se ha desconectado!</div>");
+                            $('#message').prop('disabled', true);
+                            $('#enter').prop('disabled', true);
+                        break;
                     }
                     $('div.alert-info').remove();
                 });
