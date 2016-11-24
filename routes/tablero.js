@@ -8,6 +8,7 @@ const statistics = require('../models/statistics');
 //sesiones
 const usersRouter = require('./users');
 
+//Le mandamos el tablero y todo lo demás lo gestionamos con socket.io
 router.get('/', usersRouter.ensureAuthenticated, function(req, res, next) {
     res.render('tablero', { title: 'Tablero', user: req.user, rival: req.query.rival });
 });

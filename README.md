@@ -27,7 +27,7 @@ node ./app
 -Jquery <br />
 -MongoDB <br />
 -Restify <br />
--Express.js
+-Express.js <br />
 -Socket.io <br />
 -Ejs <br />
 -Bower <br />

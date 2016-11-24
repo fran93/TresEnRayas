@@ -15,6 +15,7 @@ exports.connectDB = function(){
     });
 };
 
+//Insertar el resultado de un juego terminado
 exports.insert = function(json){
     return new Promise((resolve, reject) =>{ 
         exports.connectDB().then(db =>{
@@ -31,6 +32,7 @@ exports.insert = function(json){
     });
 };
 
+//Obtener las estadísticas de un jugador pasado por parámetro
 exports.getStatistics = function(player){
     return new Promise((resolve, reject) =>{ 
         exports.connectDB().then(db =>{

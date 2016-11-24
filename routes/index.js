@@ -4,6 +4,7 @@ const usersRouter = require('./users');
 const util = require('util');
 const statistics = require('../models/statistics');
 
+//El segundo parámetro sirve para comprobar que el usuario haya iniciado sesión
 router.get('/', usersRouter.ensureAuthenticated, function(req, res, next) {
     res.render('index', { title: 'Home', user: req.user });
 });
@@ -73,6 +74,7 @@ module.exports.socketio = function(io) {
             delete challenge[json.user];
         });
         
+        //Mandar las estadísticas al usuario
         socket.on('statistics', function(player){
             statistics.getStatistics(player).then( result =>{
                 socket.emit('statistics', result[0]);

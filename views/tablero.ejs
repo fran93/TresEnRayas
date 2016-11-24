@@ -70,8 +70,10 @@
                 var turno = false;
                 var symbol = 'x';
                 
+                //empieza el juego
                 socket.emit('newGame', rival);
                 
+                //El usuario ha pulsado en el tablero
                 $('div.square').click(function(){
                     //comprobar que no le hayamos añadido nada anteriormente
                     if($(this).children().length === 0 && !end && turno){
@@ -105,6 +107,7 @@
                     }
                 });
                 
+                //El otro jugador ha hecho un movimiento y hay que reflejarlo en el tablero
                 socket.on('next', function(pos){
                     var selector = "";
                     switch(pos){
@@ -129,6 +132,7 @@
                     $('div.alert-info').text('Ponga una ficha en el tablero');
                 });
                 
+                //El servidor nos avisa de que ambos usuarios han entrado al juego y se puede empezar a jugar
                 socket.on('startGame', function(game){
                     id = game;
                     //si el id es igual que el usuario, empieza moviendo
@@ -141,6 +145,7 @@
                     }
                 });
                 
+                //El servidor nos avisa de que el juego ha terminado, y el cliente muestra un mensaje al usuario, dependiendo del resultado
                 socket.on('end', function(ending){
                     end=true;
                     switch(ending){
@@ -168,6 +173,7 @@
                     $('div.alert-info').remove();
                 });
                 
+                //Nuestro rival nos envia un mensaje en el chat
                 socket.on('message', function(message){
                     $('#comments').append(rival+': '+message+'\n');
                 });
@@ -180,10 +186,12 @@
                     }
                 });
                 
+                //Enviar un mensaje al pulsar en el icono
                 $('#enter').click(function(){
                     sendMessages();
                 });
                 
+                //Le enviamos un mensaje a nuestro rival mediante socket.io
                 function sendMessages(){
                     var message = $('#message').val();
                     $('#message').val('');

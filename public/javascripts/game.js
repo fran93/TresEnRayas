@@ -2,8 +2,10 @@ var socket = io('/bot');
 var end = false;
 
 $( document ).ready(function() {
+    //Le decimos al servidor que vamos a jugar un nuevo juego
     socket.emit('newGame');
     
+    //Al pulsar cualquier elemento del tablero mandamos al servidor su posición, y la posición a la que hemos movido
     $('div.square').click(function(){
         //comprobar que no le hayamos añadido nada anteriormente
         if($(this).children().length === 0 && !end){
@@ -30,6 +32,7 @@ $( document ).ready(function() {
         }
     });
     
+    //El servidor nos manda la posición a la que hemos movido, y el cliente debe reflejarlo en el tablero añadiendo un div en forma de círculo. 
     socket.on('next', function(pos){
         var selector = "";
         switch(pos){
@@ -47,6 +50,7 @@ $( document ).ready(function() {
         $(selector).children().hide().fadeIn('slow');
     });
     
+    //Cuando termina la partida el servidor nos avisa, dependiendo de quien haya ganado mostramos al usuario un mensaje u otro.
     socket.on('end', function(ending){
         console.log();
         end=true;

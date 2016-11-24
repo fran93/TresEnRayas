@@ -128,6 +128,7 @@
                     socket.emit('responseChallenge', {user: $('#challenge span.badge').text(), accepted: false});
                 });
                 
+                //Retar a otro jugador
                 $('#letsplay').click(function(){
                     //quitar la alerta antes de comprobarlo de nuevo
                     $('.alert-warning').hide();
@@ -165,6 +166,7 @@
                     $('.panel-heading span.badge').text(user);
                 }
                 
+                //El servidor nos manda las estadísticas, por lo que hay que pintarlo en la pantalla
                 socket.on('statistics', function(result){
                     if(result===null){
                         //actualizar los datos de las estadísticas
@@ -185,6 +187,7 @@
                     }
                 });
                 
+                //El servidor nos avisa de que el otro que nos ha retado o viceversa, ha abandonado la sala del lobby
                 socket.on('resetState', function(){
                     //quitar el mensaje de warning y ocultar las ventanas con información
                     $('.alert-warning button').click();

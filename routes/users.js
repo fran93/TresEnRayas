@@ -17,10 +17,12 @@ const client = restify.createJsonClient({
 //Utilidades
 const util = require('util');
 
+//le mandamos la página donde puede registrarse o loguearse
 router.get('/login', function(req, res, next) {
     res.render('login', { title: 'Login Screen', messages: req.flash('loginMessage') });
 });
 
+//cuando el cliente nos manda el formulario de login, usamos passport para autenticarlo
 router.post('/login/send', passport.authenticate('local', {
         successRedirect: '/', 
         failureRedirect: '/users/login',
@@ -28,7 +30,7 @@ router.post('/login/send', passport.authenticate('local', {
     })
 );
 
-
+//cuando el cliente nos manda el formulario de registro, llamamos a la api de crear usuario
 router.post('/login/register', function(req, res, next){
     client.post('/api/users/insert', {
         "username" : req.body.username,
@@ -47,6 +49,7 @@ router.post('/login/register', function(req, res, next){
     });   
 });
 
+//salir de la sesión
 router.get('/logout', function(req, res, next) {
   req.logout();
   res.redirect('/');
@@ -57,16 +60,19 @@ exports.initPassport = function(app) {
   app.use(passport.initialize());
   app.use(passport.session());
 };
-        
+
+//Función que se usará en otros Routes para comprobar que el usuario haya iniciado sesión
 exports.ensureAuthenticated = function(req, res, next) {
   // req.user is set by Passport in the deserialize function
   if (req.user) next();
   else res.redirect('/users/login');
 };
 
+//Passport usará la estrategia local, es decir usando el usuario y la contraseña lo atenticaremos en nuestro propio servidor
 passport.use(new LocalStrategy({ 
         passReqToCallback : true
     }, function(request, username, password, cb) {
+    //hacer una petición a la api de logueo
     client.post('/api/users/login', {
         "username" : username,
         "password" : password
@@ -81,10 +87,12 @@ passport.use(new LocalStrategy({
     });
 }));
 
+//metodo necesario para iniciar sesión en passport
 passport.serializeUser(function(user, done) {
   done(null, user.username);
 });
 
+//metodo necesario para cerrar sesión en passport
 passport.deserializeUser(function(user, done) {
   done(null, user);
 });

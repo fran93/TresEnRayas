@@ -7,6 +7,7 @@ const Game = require('../models/game');
 //sesiones
 const usersRouter = require('./users');
 
+//Solo se le manda al usuario la vista del tablero, el resto se hace con socket.io
 router.get('/', usersRouter.ensureAuthenticated, function(req, res, next) {
     res.render('bot', { title: 'Tablero bot', user: req.user });
 });
@@ -19,6 +20,7 @@ module.exports.socketio = function(io) {
     //Si se desconecta un usuario que se acabe la partida
     nsp.on('connection', function(socket){
         
+        //El cliente nos manda la posición a la que ha movido
         socket.on('next', function(json){
             var state = games[socket.request.user].next(json.position, json.symbol);
             if(state==='next'){
@@ -42,6 +44,7 @@ module.exports.socketio = function(io) {
             }
         });
         
+        //Cuando el usuario quiere empezar un nuevo juego, creamos el objeto juego y lo guardamos en un hashmap, con el nombre de usuario como key
         socket.on('newGame', function(){
             if(socket.request.user in games){
                 delete games[socket.request.user];
@@ -49,8 +52,9 @@ module.exports.socketio = function(io) {
             games[socket.request.user] = new Game(socket.request.user);
         });
         
+        //Si el usuario se desconecta sin terminar la partida, borramos el juego
         socket.on('disconnect', function(){
-            //por ahora no hacemos nada aquí
+            if(socket.request.user in games) delete games[socket.request.user];
         });
     });
 };

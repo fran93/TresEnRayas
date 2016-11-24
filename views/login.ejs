@@ -12,33 +12,33 @@
             </div>
             <% } %>
             <form class="form-signin" method="POST" action="/users/login/send">
-                <h2 class="form-signin-heading">Please sign in</h2>
+                <h2 class="form-signin-heading">Logueate</h2>
                 
-                <label for="username" class="sr-only">Username</label>
-                <input id="username" name="username"  class="form-control" placeholder="Username" required="" autofocus="" type="text">
+                <label for="username" class="sr-only">Usuario</label>
+                <input id="username" name="username"  class="form-control" placeholder="Usuario" required="" autofocus="" type="text">
                 
-                <label for="password" class="sr-only">Password</label>
-                <input id="password" name="password" class="form-control" placeholder="Password" required="" type="password">
+                <label for="password" class="sr-only">Contraseña</label>
+                <input id="password" name="password" class="form-control" placeholder="Contraseña" required="" type="password">
 
                 <label for="email" class="sr-only">Email</label>
                 <input id="email" name="email" class="form-control" type="hidden">
                 
-                <label for="middleName" class="sr-only">Middle name</label>
+                <label for="middleName" class="sr-only">Segundo nombre</label>
                 <input id="middleName" name="middleName" class="form-control" type="hidden">
                 
-                <label for="familyName" class="sr-only">Family name</label>
+                <label for="familyName" class="sr-only">Apellidos</label>
                 <input id="familyName" name="familyName" class="form-control"  type="hidden">
                 
                 <div class="checkbox">
                     <label>
-                        <input value="remember-me" type="checkbox"> Remember me
+                        <input value="remember-me" type="checkbox"> Recuerdame
                     </label>
                 </div>
 
-                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Loguearse</button>
             </form>
             <br/>
-            <button class="btn btn-lg btn-primary btn-block" onclick="loginUp()" type="button">Register </button>
+            <button class="btn btn-lg btn-primary btn-block" onclick="loginUp()" type="button">Registrarse </button>
         </div>
         <% include footer %>
         <script src="/javascripts/login.js"> </script>
