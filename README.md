@@ -3,7 +3,7 @@
 -Para jugar tienes que registrarte y loguearte localmente. <br />
 -Tiene pantalla de lobby donde poder retar a otros jugadores. <br />
 -Si te retas a ti mismo puedes jugar contra un bot. <br />
--Al finalizar la partida se guardan el resultado en MongoDB, para que más tarde <br />
+-Al finalizar la partida se guardan el resultado en MongoDB, para que más tarde 
 puedas consultas las estadísticas de dicho jugador.  <br />
 
 # Instalación:
